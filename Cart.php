@@ -1,9 +1,9 @@
 <?php
 
 namespace Tools;
+
 /**
- * Class Cart
- * @package Tools
+ * Class Cart.
  */
 class Cart
 {
@@ -38,8 +38,9 @@ class Cart
 
     /**
      * Cart constructor.
+     *
      * @param null $id
-     * @param int $qty
+     * @param int  $qty
      * @param null $options
      */
     public function __construct($id = null, $qty = 1, $options = null)
@@ -49,13 +50,13 @@ class Cart
         }
         $this->key = $this->KeyGenerator();
         $this->id = $id;
-        $this->qty = empty((int)$qty) ? 1 : (int)$qty;
+        $this->qty = empty((int) $qty) ? 1 : (int) $qty;
         $this->options = $options;
     }
 
-
     /**
-     * Insert new cart item or update qty of existence
+     * Insert new cart item or update qty of existence.
+     *
      * @return bool
      */
     public function Insert()
@@ -74,6 +75,7 @@ class Cart
                     $item = $this->GetItem($this->id);
                     $qty = $item['qty'] + 1;
                     $data = ['qty' => $qty, 'options' => $item['options']];
+
                     return $this->Update($item['key'], $data);
                 }
             }
@@ -82,29 +84,33 @@ class Cart
         } else {
             $_SESSION[$this->session_name] = [$this->key => $this->Create()];
         }
+
         return true;
     }
 
-
     /**
-     * Create cart schema
+     * Create cart schema.
+     *
      * @return array
      */
     private function Create()
     {
         $data = [
-            'key' => $this->key,
-            'id' => $this->id,
-            'qty' => $this->qty,
-            'options' => $this->options
+            'key'     => $this->key,
+            'id'      => $this->id,
+            'qty'     => $this->qty,
+            'options' => $this->options,
         ];
+
         return $data;
     }
 
     /**
-     * Update cart by key, you can get product key by GetItem
+     * Update cart by key, you can get product key by GetItem.
+     *
      * @param $key
      * @param $data
+     *
      * @return bool
      */
     public function Update($key, $data)
@@ -115,19 +121,22 @@ class Cart
         if ($this->KeyExists($key)) {
             $cart = $this->Read($key);
             $data = [
-                'key' => $key,
-                'id' => $cart['id'],
-                'qty' => !isset($data['qty']) ? $cart['qty'] : $data['qty'],
+                'key'     => $key,
+                'id'      => $cart['id'],
+                'qty'     => !isset($data['qty']) ? $cart['qty'] : $data['qty'],
                 'options' => !isset($data['options']) ? $cart['options'] : $data['options'],
             ];
             $_SESSION[$this->session_name][$key] = $data;
+
             return true;
         }
+
         return false;
     }
 
     /**
-     * Check if cart is beyond maximum items
+     * Check if cart is beyond maximum items.
+     *
      * @return bool
      */
     private function IsMax()
@@ -135,35 +144,41 @@ class Cart
         if ($this->CountKeys() >= $this->max_items) {
             return true;
         }
+
         return false;
     }
 
-
     /**
-     * Count keys in cart
+     * Count keys in cart.
+     *
      * @return int
      */
     private function CountKeys()
     {
         $cart = $this->Read();
         $count = count($cart);
-        return (int)$count;
+
+        return (int) $count;
     }
 
     /**
-     * Count items in cart
+     * Count items in cart.
+     *
      * @return int
      */
     public function Count()
     {
         $cart = $this->Read();
         $count = count($cart);
-        return (int)$count;
+
+        return (int) $count;
     }
 
     /**
-     * Check if product/item exists
+     * Check if product/item exists.
+     *
      * @param $id
+     *
      * @return bool
      */
     public function ItemExists($id)
@@ -176,11 +191,13 @@ class Cart
                 }
             }
         }
+
         return false;
     }
 
     /**
-     * Generate unique cart key
+     * Generate unique cart key.
+     *
      * @return int
      */
     private function KeyGenerator()
@@ -192,12 +209,13 @@ class Cart
                 $key = mt_rand();
             }
         }
+
         return $key;
     }
 
-
     /**
-     * Get cart session keys to prevent key duplication
+     * Get cart session keys to prevent key duplication.
+     *
      * @return array|null
      */
     private function GetCartKeys()
@@ -209,13 +227,15 @@ class Cart
                 $keys[] = $key;
             }
         }
+
         return $keys;
     }
 
-
     /**
-     * Check if cart session key exists
+     * Check if cart session key exists.
+     *
      * @param $key
+     *
      * @return bool
      */
     private function KeyExists($key)
@@ -228,13 +248,13 @@ class Cart
         }
 
         return false;
-
     }
 
-
     /**
-     * Read cart by session key
+     * Read cart by session key.
+     *
      * @param null $key
+     *
      * @return null
      */
     public function Read($key = null)
@@ -243,15 +263,18 @@ class Cart
             if (!empty($key)) {
                 return $_SESSION[$this->session_name][$key];
             }
+
             return $_SESSION[$this->session_name];
         }
+
         return null;
     }
 
-
     /**
-     * Get product by id from cart session, first one will return
+     * Get product by id from cart session, first one will return.
+     *
      * @param $id
+     *
      * @return null
      */
     public function GetItem($id)
@@ -264,12 +287,13 @@ class Cart
                 }
             }
         }
+
         return null;
     }
 
-
     /**
-     * Validation
+     * Validation.
+     *
      * @return bool
      */
     private function Validate()
@@ -277,12 +301,15 @@ class Cart
         if (empty($this->id) || empty($this->qty)) {
             return false;
         }
+
         return true;
     }
 
     /**
-     * Remove item by cart session key
+     * Remove item by cart session key.
+     *
      * @param $key
+     *
      * @return bool
      */
     public function RemoveByKey($key)
@@ -291,12 +318,15 @@ class Cart
             return false;
         }
         unset($_SESSION[$this->session_name][$key]);
+
         return true;
     }
 
     /**
-     * Remove item by product id
+     * Remove item by product id.
+     *
      * @param $id
+     *
      * @return bool
      */
     public function RemoveById($id)
@@ -310,23 +340,23 @@ class Cart
                 unset($_SESSION[$this->session_name][$key]);
             }
         }
-        return true;
 
+        return true;
     }
 
-
     /**
-     * Destroy cart session
+     * Destroy cart session.
+     *
      * @return bool
      */
     public function Destroy()
     {
         if (isset($_SESSION[$this->session_name])) {
             unset($_SESSION[$this->session_name]);
+
             return true;
         }
+
         return false;
     }
-
-
 }
